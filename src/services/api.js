@@ -102,9 +102,13 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Helper to initialize local storage data
 const initStorage = () => {
-  if (!localStorage.getItem('rydex_bikes')) {
+  const existingBikes = JSON.parse(localStorage.getItem('rydex_bikes'));
+  
+  // If no bikes exist, or if the first bike is missing an image (stale data from previous version), reset it
+  if (!existingBikes || existingBikes.length === 0 || !existingBikes[0].image) {
     localStorage.setItem('rydex_bikes', JSON.stringify(initialBikes));
   }
+  
   if (!localStorage.getItem('rydex_bookings')) {
     localStorage.setItem('rydex_bookings', JSON.stringify([]));
   }
