@@ -1,10 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
+import { api } from '../services/api';
+import toast from 'react-hot-toast';
 
 export const Contact = () => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      await api.createMessage(formData);
+      toast.success('Your message has been sent successfully!');
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-background-black min-h-screen">
       <div className="glass-panel py-20 border-b border-white/10 relative overflow-hidden">
@@ -77,23 +117,56 @@ export const Contact = () => {
           {/* Contact Form */}
           <div className="glass-panel rounded-3xl p-8 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
             <h2 className="text-3xl font-heading font-bold text-white mb-8 tracking-wide">Send a Message</h2>
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Input label="First Name" placeholder="John" />
-                <Input label="Last Name" placeholder="Doe" />
+                <Input 
+                  label="First Name" 
+                  placeholder="John" 
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                />
+                <Input 
+                  label="Last Name" 
+                  placeholder="Doe" 
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                />
               </div>
-              <Input label="Email Address" type="email" placeholder="john@example.com" />
-              <Input label="Subject" placeholder="How can we help?" />
+              <Input 
+                label="Email Address" 
+                type="email" 
+                placeholder="john@example.com" 
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              <Input 
+                label="Subject" 
+                placeholder="How can we help?" 
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                required
+              />
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Message</label>
                 <textarea 
                   rows="4" 
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
                   className="w-full px-4 py-2.5 rounded-lg border border-white/10 focus:border-primary focus:ring-primary bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-colors"
                   placeholder="Type your message here..."
                 ></textarea>
               </div>
-              <Button type="submit" size="lg" className="w-full gap-2 mt-2 rounded-xl shadow-[0_0_20px_rgba(255,51,102,0.4)]">
-                <Send className="w-5 h-5" /> Send Message
+              <Button type="submit" size="lg" disabled={isSubmitting} className="w-full gap-2 mt-2 rounded-xl shadow-[0_0_20px_rgba(255,51,102,0.4)]">
+                <Send className="w-5 h-5" /> {isSubmitting ? 'Sending...' : 'Send Message'}
               </Button>
             </form>
           </div>

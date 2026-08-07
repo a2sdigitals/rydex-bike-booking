@@ -1,196 +1,83 @@
 // src/services/api.js
 
-const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
-const USE_MOCK = true; // Set to false to use Google Apps Script
+const API_URL = "https://script.google.com/macros/s/AKfycbyE5v18vXrJtbRemVUYIrQJcrp2vFF9hPXJnMn7FRjWK1TP8N4hqawhYlhHUKYDeqMPHA/exec";
 
-// Initial Demo Data
-const initialBikes = [
-  {
-    bikeId: 'b1',
-    bikeName: 'Honda Activa 6G',
-    brand: 'Honda',
-    model: 'Activa 6G',
-    registrationNumber: 'MH-12-AB-1234',
-    category: 'Scooter',
-    engineCC: 109,
-    fuelType: 'Petrol',
-    transmission: 'Automatic',
-    mileage: 45,
-    pricePerDay: 499,
-    depositAmount: 1000,
-    image: 'https://images.unsplash.com/photo-1629853336495-2d6ec2a149b5?auto=format&fit=crop&q=80&w=800',
-    description: 'A reliable and comfortable scooter for city rides.',
-    availability: 'Available',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    bikeId: 'b2',
-    bikeName: 'TVS Ntorq 125',
-    brand: 'TVS',
-    model: 'Ntorq 125',
-    registrationNumber: 'MH-14-XY-9876',
-    category: 'Scooter',
-    engineCC: 124,
-    fuelType: 'Petrol',
-    transmission: 'Automatic',
-    mileage: 40,
-    pricePerDay: 599,
-    depositAmount: 1500,
-    image: 'https://images.unsplash.com/photo-1614169542171-d652f1e6b3eb?auto=format&fit=crop&q=80&w=800',
-    description: 'Sporty scooter with great performance and tech features.',
-    availability: 'Available',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    bikeId: 'b3',
-    bikeName: 'Royal Enfield Classic 350',
-    brand: 'Royal Enfield',
-    model: 'Classic 350',
-    registrationNumber: 'MH-01-RE-3500',
-    category: 'Bike',
-    engineCC: 349,
-    fuelType: 'Petrol',
-    transmission: 'Manual',
-    mileage: 35,
-    pricePerDay: 1299,
-    depositAmount: 3000,
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800',
-    description: 'The iconic cruiser for long and comfortable rides.',
-    availability: 'Available',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    bikeId: 'b4',
-    bikeName: 'Yamaha MT-15',
-    brand: 'Yamaha',
-    model: 'MT-15',
-    registrationNumber: 'MH-02-YM-1500',
-    category: 'Bike',
-    engineCC: 155,
-    fuelType: 'Petrol',
-    transmission: 'Manual',
-    mileage: 45,
-    pricePerDay: 1099,
-    depositAmount: 2500,
-    image: 'https://images.unsplash.com/photo-1621245780517-563b7e738c6f?auto=format&fit=crop&q=80&w=800',
-    description: 'Hyper naked street bike with thrilling performance.',
-    availability: 'Not Available',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    bikeId: 'b5',
-    bikeName: 'Bajaj Pulsar N160',
-    brand: 'Bajaj',
-    model: 'Pulsar N160',
-    registrationNumber: 'MH-12-PL-1600',
-    category: 'Bike',
-    engineCC: 164,
-    fuelType: 'Petrol',
-    transmission: 'Manual',
-    mileage: 42,
-    pricePerDay: 799,
-    depositAmount: 2000,
-    image: 'https://images.unsplash.com/photo-1628867382487-17eb481a511f?auto=format&fit=crop&q=80&w=800',
-    description: 'Aggressive styling and refined performance for the city.',
-    availability: 'Available',
-    createdAt: new Date().toISOString(),
-  }
-];
-
-// Helper to mock delay
+// Helper to mock delay for local testing
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Helper to initialize local storage data
-const initStorage = () => {
-  const existingBikes = JSON.parse(localStorage.getItem('rydex_bikes'));
-  
-  // If no bikes exist, or if the first bike is missing an image (stale data from previous version), reset it
-  if (!existingBikes || existingBikes.length === 0 || !existingBikes[0].image) {
-    localStorage.setItem('rydex_bikes', JSON.stringify(initialBikes));
-  }
-  
-  if (!localStorage.getItem('rydex_bookings')) {
-    localStorage.setItem('rydex_bookings', JSON.stringify([]));
+// Helper function to interact with Google Apps Script
+const fetchFromGoogle = async (payload) => {
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        // text/plain prevents CORS preflight issues with Google Apps Script
+        'Content-Type': 'text/plain;charset=utf-8',
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    const result = await response.json();
+    if (!result.success) {
+      console.error(`API Error (${payload.action}):`, result.message);
+    }
+    return result;
+  } catch (error) {
+    console.error(`Network Error (${payload.action}):`, error);
+    throw error;
   }
 };
-
-if (USE_MOCK) {
-  initStorage();
-}
-
-// --- API Methods ---
 
 export const api = {
   // --- Admin Auth ---
   adminLogin: async (username, password) => {
-    if (USE_MOCK) {
-      await delay(800);
-      if (username === 'admin' && password === 'admin123') {
-        return { success: true, token: 'mock_token_123', name: 'Admin User' };
-      }
-      throw new Error("Invalid admin credentials");
+    // For now, keep hardcoded admin since there's no Admin sheet
+    await delay(800);
+    if (username === 'admin' && password === 'admin123') {
+      return { success: true, token: 'mock_token_123', name: 'Admin User' };
     }
-    // TODO: Google Apps Script fetch implementation
+    throw new Error("Invalid admin credentials");
   },
 
   // --- Bikes ---
   getBikes: async () => {
-    if (USE_MOCK) {
-      await delay(500);
-      return JSON.parse(localStorage.getItem('rydex_bikes') || '[]');
-    }
+    const result = await fetchFromGoogle({ action: 'getBikes' });
+    return result.success ? result.data : [];
   },
   
   getBikeById: async (bikeId) => {
-    if (USE_MOCK) {
-      await delay(300);
-      const bikes = JSON.parse(localStorage.getItem('rydex_bikes') || '[]');
-      return bikes.find(b => b.bikeId === bikeId) || null;
-    }
+    const bikes = await api.getBikes();
+    return bikes.find(b => b.bikeId === bikeId) || null;
   },
 
   addBike: async (bikeData) => {
-    if (USE_MOCK) {
-      await delay(800);
-      const bikes = JSON.parse(localStorage.getItem('rydex_bikes') || '[]');
-      const newBike = {
-        ...bikeData,
-        bikeId: 'b' + Date.now(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      bikes.push(newBike);
-      localStorage.setItem('rydex_bikes', JSON.stringify(bikes));
+    const newBike = {
+      ...bikeData,
+      bikeId: 'b' + Date.now(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    const result = await fetchFromGoogle({ action: 'addBike', data: newBike });
+    if (result.success) {
       return { success: true, bikeId: newBike.bikeId };
     }
+    throw new Error(result.message);
   },
 
   updateBike: async (bikeId, updates) => {
-    if (USE_MOCK) {
-      await delay(800);
-      let bikes = JSON.parse(localStorage.getItem('rydex_bikes') || '[]');
-      let updated = false;
-      bikes = bikes.map(b => {
-        if (b.bikeId === bikeId) {
-          updated = true;
-          return { ...b, ...updates, updatedAt: new Date().toISOString() };
-        }
-        return b;
-      });
-      if (!updated) throw new Error("Bike not found");
-      localStorage.setItem('rydex_bikes', JSON.stringify(bikes));
+    const result = await fetchFromGoogle({ action: 'updateBike', bikeId, data: updates });
+    if (result.success) {
       return { success: true };
     }
+    throw new Error(result.message);
   },
 
   deleteBike: async (bikeId) => {
-    if (USE_MOCK) {
-      await delay(800);
-      let bikes = JSON.parse(localStorage.getItem('rydex_bikes') || '[]');
-      bikes = bikes.filter(b => b.bikeId !== bikeId);
-      localStorage.setItem('rydex_bikes', JSON.stringify(bikes));
+    const result = await fetchFromGoogle({ action: 'deleteBike', bikeId });
+    if (result.success) {
       return { success: true };
     }
+    throw new Error(result.message);
   },
 
   updateBikePrice: async (bikeId, newPrice) => {
@@ -203,58 +90,63 @@ export const api = {
 
   // --- Bookings ---
   createBooking: async (bookingData) => {
-    if (USE_MOCK) {
-      await delay(1000);
-      const bookings = JSON.parse(localStorage.getItem('rydex_bookings') || '[]');
-      const newBooking = {
-        ...bookingData,
-        bookingId: 'RYD-' + new Date().getFullYear() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase(),
-        paymentStatus: 'Verification Pending',
-        bookingStatus: 'Pending',
-        createdAt: new Date().toISOString(),
-      };
-      bookings.push(newBooking);
-      localStorage.setItem('rydex_bookings', JSON.stringify(bookings));
+    const newBooking = {
+      ...bookingData,
+      bookingId: 'RYD-' + new Date().getFullYear() + '-' + Math.random().toString(36).substring(2, 7).toUpperCase(),
+      paymentStatus: 'Verification Pending',
+      bookingStatus: 'Pending',
+      createdAt: new Date().toISOString(),
+    };
+    
+    const result = await fetchFromGoogle({ action: 'createBooking', data: newBooking });
+    if (result.success) {
       return { success: true, bookingId: newBooking.bookingId, booking: newBooking };
     }
+    throw new Error(result.message);
   },
 
   getBookings: async () => {
-    if (USE_MOCK) {
-      await delay(500);
-      return JSON.parse(localStorage.getItem('rydex_bookings') || '[]');
-    }
+    const result = await fetchFromGoogle({ action: 'getBookings' });
+    return result.success ? result.data : [];
   },
   
   getBookingById: async (bookingId) => {
-    if (USE_MOCK) {
-      await delay(300);
-      const bookings = JSON.parse(localStorage.getItem('rydex_bookings') || '[]');
-      return bookings.find(b => b.bookingId === bookingId) || null;
-    }
+    const bookings = await api.getBookings();
+    return bookings.find(b => b.bookingId === bookingId) || null;
   },
 
   updateBookingStatus: async (bookingId, bookingStatus) => {
-    if (USE_MOCK) {
-      await delay(600);
-      let bookings = JSON.parse(localStorage.getItem('rydex_bookings') || '[]');
-      bookings = bookings.map(b => b.bookingId === bookingId ? { ...b, bookingStatus } : b);
-      localStorage.setItem('rydex_bookings', JSON.stringify(bookings));
+    const result = await fetchFromGoogle({ action: 'updateBookingStatus', bookingId, data: { bookingStatus } });
+    if (result.success) {
       return { success: true };
     }
+    throw new Error(result.message);
   },
 
   verifyPayment: async (bookingId, isVerified) => {
-    if (USE_MOCK) {
-      await delay(800);
-      let bookings = JSON.parse(localStorage.getItem('rydex_bookings') || '[]');
-      bookings = bookings.map(b => b.bookingId === bookingId ? { 
-        ...b, 
-        paymentStatus: isVerified ? 'Verified' : 'Rejected',
-        bookingStatus: isVerified ? 'Confirmed' : 'Cancelled'
-      } : b);
-      localStorage.setItem('rydex_bookings', JSON.stringify(bookings));
+    const updates = {
+      paymentStatus: isVerified ? 'Verified' : 'Rejected',
+      bookingStatus: isVerified ? 'Confirmed' : 'Cancelled'
+    };
+    const result = await fetchFromGoogle({ action: 'updateBookingStatus', bookingId, data: updates });
+    if (result.success) {
       return { success: true };
     }
+    throw new Error(result.message);
+  },
+
+  // --- Messages ---
+  createMessage: async (messageData) => {
+    const newMessage = {
+      ...messageData,
+      messageId: 'MSG-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7).toUpperCase(),
+      createdAt: new Date().toISOString(),
+    };
+    
+    const result = await fetchFromGoogle({ action: 'createMessage', data: newMessage });
+    if (result.success) {
+      return { success: true, messageId: newMessage.messageId };
+    }
+    throw new Error(result.message);
   },
 };
