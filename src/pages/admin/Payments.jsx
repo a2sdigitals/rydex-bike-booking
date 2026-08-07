@@ -56,49 +56,49 @@ export const AdminPayments = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Payment Verification</h1>
+    <div className="space-y-6 pt-4">
+      <h1 className="text-3xl font-heading font-black text-white mb-8 tracking-tight">Payment Verification</h1>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="glass-panel rounded-3xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-max">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-100 text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                <th className="p-4">Booking ID</th>
-                <th className="p-4">Customer</th>
-                <th className="p-4">Amount</th>
-                <th className="p-4">UPI Txn ID</th>
-                <th className="p-4">Status</th>
-                <th className="p-4 text-right">Actions</th>
+              <tr className="bg-white/5 border-b border-white/10 text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                <th className="p-5 font-light">Booking ID</th>
+                <th className="p-5 font-light">Customer</th>
+                <th className="p-5 font-light">Amount</th>
+                <th className="p-5 font-light">UPI Txn ID</th>
+                <th className="p-5 font-light">Status</th>
+                <th className="p-5 text-right font-light">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-white/5">
               {loading ? (
-                <tr><td colSpan="6" className="p-8 text-center text-gray-500">Loading payments...</td></tr>
+                <tr><td colSpan="6" className="p-8 text-center text-gray-400 font-light">Loading payments...</td></tr>
               ) : payments.length === 0 ? (
-                <tr><td colSpan="6" className="p-8 text-center text-gray-500">No payments found.</td></tr>
+                <tr><td colSpan="6" className="p-8 text-center text-gray-400 font-light">No payments found.</td></tr>
               ) : (
                 payments.map((p) => (
-                  <tr key={p.bookingId} className="hover:bg-gray-50 transition-colors">
-                    <td className="p-4 font-mono text-sm text-gray-900">{p.bookingId}</td>
-                    <td className="p-4">
-                      <p className="font-semibold text-gray-900">{p.fullName}</p>
+                  <tr key={p.bookingId} className="hover:bg-white/5 transition-colors group">
+                    <td className="p-5 font-mono text-sm text-gray-300">{p.bookingId}</td>
+                    <td className="p-5">
+                      <p className="font-heading font-bold text-white tracking-wide">{p.fullName}</p>
                     </td>
-                    <td className="p-4 font-bold text-gray-900">₹{p.totalAmount}</td>
-                    <td className="p-4 font-mono text-gray-600">{p.transactionId}</td>
-                    <td className="p-4"><StatusBadge status={p.paymentStatus} /></td>
-                    <td className="p-4 text-right">
+                    <td className="p-5 font-heading font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">₹{p.totalAmount}</td>
+                    <td className="p-5 font-mono text-gray-300">{p.transactionId}</td>
+                    <td className="p-5"><StatusBadge status={p.paymentStatus} /></td>
+                    <td className="p-5 text-right">
                       {p.paymentStatus === 'Verification Pending' ? (
                         <div className="flex items-center justify-end gap-2">
-                          <button onClick={() => confirmAction(p, 'verify')} className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Verify">
+                          <button onClick={() => confirmAction(p, 'verify')} className="p-2 text-green-400 hover:bg-green-500/10 rounded-lg transition-colors" title="Verify">
                             <CheckCircle className="w-5 h-5" />
                           </button>
-                          <button onClick={() => confirmAction(p, 'reject')} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Reject">
+                          <button onClick={() => confirmAction(p, 'reject')} className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors" title="Reject">
                             <XCircle className="w-5 h-5" />
                           </button>
                         </div>
                       ) : (
-                        <span className="text-gray-400 text-sm italic">Processed</span>
+                        <span className="text-gray-500 text-sm font-light italic">Processed</span>
                       )}
                     </td>
                   </tr>
@@ -110,22 +110,22 @@ export const AdminPayments = () => {
       </div>
 
       <Modal isOpen={isVerifyOpen} onClose={() => setIsVerifyOpen(false)} title="Verify Payment">
-        <p className="text-gray-600 mb-6">
-          Confirm that you have manually verified the receipt of <strong className="text-gray-900">₹{selectedBooking?.totalAmount}</strong> for transaction <span className="font-mono">{selectedBooking?.transactionId}</span>?
+        <p className="text-gray-400 mb-8 font-light text-lg">
+          Confirm that you have manually verified the receipt of <strong className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent font-black">₹{selectedBooking?.totalAmount}</strong> for transaction <span className="font-mono text-white">{selectedBooking?.transactionId}</span>?
         </p>
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={() => setIsVerifyOpen(false)}>Cancel</Button>
-          <Button onClick={() => handleVerification(true)} className="bg-green-600 hover:bg-green-700 focus:ring-green-600">Yes, Verified</Button>
+        <div className="flex justify-end gap-3 pt-6 border-t border-white/5">
+          <Button variant="outline" onClick={() => setIsVerifyOpen(false)} className="rounded-xl border-white/20 text-gray-300 hover:bg-white/5">Cancel</Button>
+          <Button onClick={() => handleVerification(true)} className="rounded-xl bg-green-500 hover:bg-green-600 shadow-[0_0_20px_rgba(34,197,94,0.3)] border-none">Yes, Verified</Button>
         </div>
       </Modal>
 
       <Modal isOpen={isRejectOpen} onClose={() => setIsRejectOpen(false)} title="Reject Payment">
-        <p className="text-gray-600 mb-6">
-          Are you sure you want to reject the payment for transaction <span className="font-mono">{selectedBooking?.transactionId}</span>? This will cancel the booking.
+        <p className="text-gray-400 mb-8 font-light text-lg">
+          Are you sure you want to reject the payment for transaction <span className="font-mono text-white">{selectedBooking?.transactionId}</span>? This will cancel the booking.
         </p>
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={() => setIsRejectOpen(false)}>Cancel</Button>
-          <Button variant="danger" onClick={() => handleVerification(false)}>Yes, Reject</Button>
+        <div className="flex justify-end gap-3 pt-6 border-t border-white/5">
+          <Button variant="outline" onClick={() => setIsRejectOpen(false)} className="rounded-xl border-white/20 text-gray-300 hover:bg-white/5">Cancel</Button>
+          <Button variant="danger" onClick={() => handleVerification(false)} className="rounded-xl">Yes, Reject</Button>
         </div>
       </Modal>
     </div>

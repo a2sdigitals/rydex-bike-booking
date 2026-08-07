@@ -19,58 +19,62 @@ export const BookingSuccess = () => {
   };
 
   return (
-    <div className="bg-background-light min-h-[80vh] flex items-center justify-center py-12">
+    <div className="bg-background-black min-h-[80vh] flex items-center justify-center py-12">
       <div className="container mx-auto px-4 max-w-lg">
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden text-center p-8 sm:p-12">
+        <div className="glass-panel rounded-3xl shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden text-center p-8 sm:p-12 relative">
           
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-green-50 text-status-success rounded-full mb-6">
-            <CheckCircle2 className="w-10 h-10" />
-          </div>
-          
-          <h1 className="text-3xl font-extrabold text-gray-900 mb-4">Booking Submitted!</h1>
-          <p className="text-gray-600 mb-8 leading-relaxed">
-            Your rental request has been submitted successfully. Your payment will be verified by Rydex shortly.
-          </p>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-green-500/10 blur-[80px] rounded-full pointer-events-none" />
 
-          <div className="bg-gray-50 rounded-2xl p-6 text-left mb-8 border border-gray-100">
-            <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
-              <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Booking ID</span>
-              <div className="flex items-center gap-2">
-                <span className="font-mono font-bold text-gray-900">{booking.bookingId}</span>
-                <button onClick={copyToClipboard} className="text-gray-400 hover:text-primary transition-colors">
-                  <Copy className="w-4 h-4" />
-                </button>
+          <div className="relative z-10">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500/20 text-green-400 rounded-full mb-6 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
+              <CheckCircle2 className="w-10 h-10" />
+            </div>
+            
+            <h1 className="text-4xl font-heading font-black text-white mb-4 tracking-tight">Booking Submitted!</h1>
+            <p className="text-gray-400 font-light mb-8 leading-relaxed">
+              Your rental request has been submitted successfully. Your payment will be verified by Rydex shortly.
+            </p>
+
+            <div className="bg-white/5 rounded-2xl p-6 text-left mb-8 border border-white/10">
+              <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                <span className="text-sm font-heading font-bold text-gray-500 uppercase tracking-wider">Booking ID</span>
+                <div className="flex items-center gap-3">
+                  <span className="font-mono font-bold text-white text-lg">{booking.bookingId}</span>
+                  <button onClick={copyToClipboard} className="text-gray-400 hover:text-primary transition-colors p-1.5 hover:bg-white/5 rounded-lg">
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
+
+              <ul className="space-y-4 text-sm font-light">
+                <li className="flex justify-between">
+                  <span className="text-gray-400">Bike</span>
+                  <span className="font-medium text-white">{booking.bikeName}</span>
+                </li>
+                <li className="flex justify-between">
+                  <span className="text-gray-400">Start Date</span>
+                  <span className="font-medium text-white">{booking.startDate}</span>
+                </li>
+                <li className="flex justify-between">
+                  <span className="text-gray-400">Total Paid</span>
+                  <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent font-bold">₹{booking.totalAmount}</span>
+                </li>
+                <li className="flex justify-between">
+                  <span className="text-gray-400">Transaction ID</span>
+                  <span className="font-mono text-gray-300">{booking.transactionId}</span>
+                </li>
+                <li className="flex justify-between items-center pt-3 border-t border-white/5">
+                  <span className="text-gray-400">Status</span>
+                  <StatusBadge status={booking.paymentStatus} />
+                </li>
+              </ul>
             </div>
 
-            <ul className="space-y-4 text-sm">
-              <li className="flex justify-between">
-                <span className="text-gray-500">Bike</span>
-                <span className="font-medium text-gray-900">{booking.bikeName}</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-500">Start Date</span>
-                <span className="font-medium text-gray-900">{booking.startDate}</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-500">Total Paid</span>
-                <span className="font-medium text-gray-900">₹{booking.totalAmount}</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-500">Transaction ID</span>
-                <span className="font-mono text-gray-900">{booking.transactionId}</span>
-              </li>
-              <li className="flex justify-between items-center pt-2">
-                <span className="text-gray-500">Status</span>
-                <StatusBadge status={booking.paymentStatus} />
-              </li>
-            </ul>
-          </div>
-
-          <div className="space-y-3">
-            <Link to="/" className="block">
-              <Button variant="outline" className="w-full">Back to Home</Button>
-            </Link>
+            <div className="space-y-3">
+              <Link to="/" className="block">
+                <Button variant="outline" className="w-full rounded-xl border-white/20 text-gray-300 hover:bg-white/5">Back to Home</Button>
+              </Link>
+            </div>
           </div>
           
         </div>

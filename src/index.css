@@ -1,23 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #FF5A1F;
-  --color-primary-dark: #E9470C;
+  --color-primary: #FF3366; /* Vibrant Neon Pink/Red */
+  --color-primary-dark: #CC0033;
+  --color-accent: #00F0FF; /* Neon Cyan */
   
   --color-background-light: #F7F8FA;
-  --color-background-surface: #15181D;
-  --color-background-black: #0B0D10;
+  --color-background-surface: #1A1D24; /* Sleek charcoal */
+  --color-background-black: #0B0D10; /* Deep black */
+  --color-background-glass: rgba(26, 29, 36, 0.7); /* Glassmorphism bg */
   
-  --color-status-success: #16A34A;
-  --color-status-danger: #DC2626;
+  --color-status-success: #10B981;
+  --color-status-danger: #EF4444;
   --color-status-warning: #F59E0B;
   
   --font-sans: "Inter", system-ui, sans-serif;
+  --font-heading: "Outfit", system-ui, sans-serif;
 }
 
 @layer base {
   body {
-    @apply bg-background-light text-background-black font-sans antialiased;
+    @apply bg-background-black text-gray-100 font-sans antialiased selection:bg-primary/30 selection:text-primary;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+  
+  /* Smooth scrolling for the whole page */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom utility for glassmorphism panels if not using arbitrary values everywhere */
+@layer utilities {
+  .glass-panel {
+    @apply bg-background-glass backdrop-blur-md border border-white/10 shadow-xl;
   }
 }
