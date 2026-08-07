@@ -91,9 +91,9 @@ export const AdminLogin = () => {
             Login to Dashboard
           </Button>
           
-          <p className="text-center text-xs text-gray-400 mt-4">
+          {/* <p className="text-center text-xs text-gray-400 mt-4">
             Demo credentials: admin / admin123
-          </p>
+          </p> */}
         </form>
       </div>
     </div>
